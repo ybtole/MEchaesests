@@ -4,16 +4,18 @@ const ctx = canvas.getContext("2d");
 let linhas = 3;
 let colunas = 4;
 
-let tamanho = 60;
+let largura = 60;
+let altura = 25;
+let padding = 10;
 
-let matriz = [];
+let blocos = [];
 
 
 // Primeiro loop (colunas)
 // Percorre coluna 0 ~ 3
 for(let c = 0; c < colunas; c++)
 {
-    matriz[c] = [];
+    blocos[c] = [];
 
     // Segundo loop linhas
     for(let r = 0; r < linhas; r++)
@@ -23,48 +25,67 @@ for(let c = 0; c < colunas; c++)
         //            [1][1][1]
         //            [1][1][1]
         //            [1][1][1]   
-    matriz[c][r] = 1;
+        matriz[c][r] = {
+            x:0,
+            y:0,
+            ativo:true
+        };
     }
 }
 
 // Função Desenha os Quadrados no canvas
-function desenhar()
+function desenharBlocos()
 {
+    ctx.clearRect(0,0,canvas.clientWidth,canvas.height);
 
-    // Percorre toda matriz
+    for(let c = 0; c < colunas; c++){
+        for(let r = 0; r < linhas; r++){
 
-    //matriz[0][0]
-    //matriz[0][1]
-    //matriz[0][2]
+            if(blocos[c][r].ativo){
 
-    //matriz[1][0]
-    //matriz[1][1]
-    //matriz[1][2]
-    // ...
+                let x = c * (largura + padding) + 40;
+                let y = r * (altura + padding) + 40;
 
-    for(let c = 0; c < colunas; c++)
-    {
+                blocos [c][r].x = x;
+                blocos[c][r].y = y;
 
-        for(let r = 0; r < linhas; r++)
-        {
-
-            //posição horizontal
-            // x = colun a x tamanho
-            // posição vertical
-                // y = linha x tamanho
-                // +20 é uma margem
-
-            let x = c * tamanho + 20;
-            let y = r * tamanho + 20;
-
-            //Dsenha um retângulo apenas com borda.
-            // Parâmetros:
-                // x -> posição horizontal
-                // y -> posição vertical
-
-                ctx.strokeRect(x, y, tamanho, tamanho);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle - "white";
+                ctx.strokeRect(x, y, largura, altura);
+            }
         }
     }
 }
 
-desenhar();
+    canvas.addEventListenter("click", clicar);
+
+    function clicar(event){
+
+        let rect = canvas.getBoundingClientRect();
+
+        let mouseX = event.clientX - rect.left;
+        let mouseY = event.clientY - rect.top;
+
+        for(let c = 0; c < colunas; c++){
+            for(let r = 0; r < linhas; r++)
+            {
+
+                let bloco= blocos[c][r];
+
+                if (bloco.ativo){
+
+                    if(
+                        mouseX > bloco.x &&
+                        mouseX < bloco.x + largura &&
+                        mouseY > bloco.y &&
+                        mouseY < bloco.y + altura
+                    ){
+                        bloco.ativo = false;
+                    }
+                }
+            }
+        }
+        desenharBlocos();
+    }
+
+    desenharBlocos();
